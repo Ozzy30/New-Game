@@ -1,0 +1,128 @@
+import random
+import time
+from PIL import ImageTk, Image
+
+#Klassen
+currentLayerLevel = 0
+
+#Charakter Klasse
+class Character(object):
+    def __init__(self, name):
+        self.name = name
+        self.level = 1
+        self.klasse = None
+        self.maxHP = 300 + random.randint(0, 50)
+        self.aktHP = self.maxHP
+        self.maxMP = 100 + random.randint(0, 20)
+        self.aktMP = self.maxMP
+        self.strength = 30
+        self.defense = 20
+        self.dodge = 1
+        self.luck = 2
+        self.maxXP = 100
+        self.aktXP = 0
+        self.abilities = ["schlag", "heal"]
+        self.statMap = {"1": self.maxHP + 30, "2": self.maxMP + 20, "3": self.strength + 10, "4": self.defense + 10, "5": self.luck + 1}
+
+    def schadenNehmen(self, schaden):
+        schaden = schaden - round(0.5*self.defense)
+        self.aktHP = self.aktHP - schaden
+        
+    def levelUp(self):
+        self.level = self.level + 1
+        self.maxXP += 30
+
+        MpUp = 10 + random.randint(0, 10)
+        HpUp = 20 + random.randint(0, 20)
+
+        self.maxHP += HpUp
+        self.aktHP += HpUp
+        self.maxMP += MpUp
+        self.aktMP += MpUp
+
+        if self.level%2 == 0:
+            self.strength += 10
+            self.defense += 10
+
+        for i in range (0, self.luck):
+            if random.randint(0, 10) == 10:
+                self.luck += 1
+        
+        Auswahl = "1"
+        self.statMap[Auswahl]
+        
+        if self.level == 3:
+            self.abilities += ["starkerSchlag"]
+    
+    def returnStats(self):
+
+        return [self.name, self.level, self.aktHP, self.maxHP, self.aktMP, self.maxMP, self.strength, self.defense, self.aktXP, self.maxXP]
+    
+    
+
+
+
+
+
+
+
+
+class enemy(object):
+    def __init__(self, nummer, currentLayer):
+        self.enemyDict = {1: ["Aryeh", 75, 15, 30, 2, 25, 2, 70, 5], 2: ["Farid", 100, 20, 20, 1, 35, 3, 70, 5], 3: ["Mika", 50, 10, 40, 3, 15, 1, 70, 5]}
+        self.faridImage = ImageTk.PhotoImage(Image.open("Farid.png"))
+        self.enemyDictImages = {1:, 2: self.faridImage, 3: "Mika"}
+        self.nummer = nummer
+      
+    def createEnemy(self):
+        self.enemyArray = self.enemyDict[self.nummer]
+
+        self.name = self.enemyArray[0]
+        self.maxHP = round((self.enemyArray[1] + self.enemyArray[2]*currentLayerLevel)*currentLayer.enemyBuff)
+        self.aktHP = self.maxHP
+        self.strength = round((self.enemyArray[3] + self.enemyArray[4]*currentLayerLevel)*currentLayer.enemyBuff)
+        self.defense = round((self.enemyArray[5] + self.enemyArray[6]*currentLayerLevel)*currentLayer.enemyBuff)
+        self.XP = round((self.enemyArray[7] + self.enemyArray[8]*currentLayerLevel)*currentLayer.enemyBuff)
+        
+    def schadenNehmen(self, schaden):
+        schaden = schaden - round(0.5*self.defense)
+        self.aktHP = self.aktHP - schaden 
+
+
+
+
+class layer(object):
+    def __init__(self, nummer):
+        self.nummer = nummer
+        if self.nummer == 1:
+            self.name = "Flachland"
+            self.encounter = 0.5
+            self.treasure = 0.5
+            self.npc = 1
+            self.enemyBuff = 1
+
+        elif self.nummer == 2:
+            self.name = "Ruinen"
+            self.encounter = 0.5
+            self.treasure = 0.8
+            self.npc = 1
+            self.enemyBuff = 1.2
+
+        elif self.nummer == 3:
+            self.name = "Sumpf"
+            self.encounter = 0.5
+            self.treasure = 0.9
+            self.npc = 1
+            self.enemyBuff = 1.4
+
+        elif self.nummer == 4:
+            self.name = "Höhle"
+            self.encounter = 0.5
+            self.treasure = 1
+            self.npc = 1
+            self.enemyBuff = 1.6
+
+currentLayer = layer(random.randint(1, 4))
+
+
+enemy(1, currentLayer).createEnemy()
